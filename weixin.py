@@ -835,6 +835,32 @@ class WebWeixin(object):
             self.timeRank(check_info, dst)
         elif content == "读取状态":
             self.readStatus(dst)
+        elif content == "sudo清空重置":
+            date_time = datetime.datetime.now()
+            fn = 'data\data_' + date_time.strftime('%Y-%m-%d')
+            fd = open(fn,'w+')
+            for i in range(memberNum):
+                line = (str)(state_in[i]) + '\t' + (str)(last_login[i])
+                for j in range(7):
+                    line = line + '\t' + (str)(online_time[j][i].total_seconds())
+                line = line + '\t'+ 'end' + '\n'
+                fd.write(line)
+            fd.close()
+            for i in range(memberNum):
+            	state_in[i] = 0
+            	last_login[i] = time_init
+            	for j in range(7):
+            		online_time[j][i] = datetime.timedelta(0)
+            fd = open('cache','w+')
+            for i in range(memberNum):
+                line = (str)(state_in[i]) + '\t' + (str)(last_login[i])
+                for j in range(7):
+                    line = line + '\t' + (str)(online_time[j][i].total_seconds())
+                line = line + '\t'+ 'end' + '\n'
+                fd.write(line)
+            fd.close()
+            self.webwxsendmsg('重置成功',dst)
+
         else:
             try:
                 if len(buffer_content) == 2 and buffer_content[0].isdigit() and buffer_content[1].isalpha():

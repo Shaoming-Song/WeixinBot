@@ -24,6 +24,11 @@ from lxml import html
 from name_dict import name_dict
 from name_dict import name_abbr
 from id_group import id_dict
+
+# Added by Jiaqi Gao
+from re_test import re_dict
+import xmlrpclib
+
 #import pdb
 
 # for media upload
@@ -135,6 +140,7 @@ class WebWeixin(object):
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
         opener.addheaders = [('User-agent', self.user_agent)]
         urllib2.install_opener(opener)
+        self.rpc_server = xmlrpclib.ServerProxy('http://localhost:12345')
 
     def loadConfig(self, config):
         if config['DEBUG']:
@@ -750,7 +756,7 @@ class WebWeixin(object):
         if groupName != None:
             print '%s |%s| %s -> %s: %s' % (message_id, groupName.strip(), srcName.strip(), dstName.strip(), content.replace('<br/>', '\n'))
             
-            if groupName.strip() == "微信机器人测试" or groupName.strip() == "沉迷学习，日渐消瘦":
+            if groupName.strip() == "微信机器人测试": #or groupName.strip() == "沉迷学习，日渐消瘦":
                 print msg['raw_msg']['Content']
                 if msg['raw_msg']['FromUserName'][:2] == '@@':
                     self.handleGroupMsg(content, msg['raw_msg']['FromUserName'], srcName)
@@ -771,6 +777,24 @@ class WebWeixin(object):
             logging.info('%s %s -> %s: %s' % (message_id, srcName.strip(),
                                               dstName.strip(), content.replace('<br/>', '\n')))
     def handleGroupMsg(self, content, dst, srcName):
+
+        try:
+            for key in re_dict:
+                if re.match(key, content):
+                    #self.webwxsendmsg(re_dict[key] + '【自动回复】', dst)
+                    #self.webwxsendmsg("【收到内容】" + content , dst)
+                    #return
+                    msg, extra_msg = re_dict[key](content, dst, srcName)
+                    if msg != None:
+                        self.webwxsendmsg(msg + '【自动回复】', dst)
+                    if extra_msg != None:
+                        self.webwxsendmsg(extra_msg, dst)
+                    return
+        except Exception, e:
+            print str(e)
+            pass
+        return
+
         log_info = ''
         content_new = content.replace('<br/>', '\n')
         buffer_content = content.split()
@@ -1375,7 +1399,8 @@ class WebWeixin(object):
         # img.save("qrcode.png")
         #mat = qr.get_matrix()
         #self._printQR(mat)  # qr.print_tty() or qr.print_ascii()
-        qr.print_ascii(invert=True)
+        qr.print_tty()
+        #qr.print_ascii(invert=True)
 
     def _transcoding(self, data):
         if not data:

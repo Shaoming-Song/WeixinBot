@@ -1057,23 +1057,29 @@ class WebWeixin(object):
                 online_time_sum[i] = online_time_sum[i] + online_time[j][i]
             online_time_sum[i] = online_time_sum[i] + duration
             totalseconds[i] = online_time_sum[i].total_seconds()
-        name_list = ['徐凯源','宋绍铭','刘洋    ','韩纪飞','高佳琦','郭东旭','张若冰','韩晓霏','于超    ','林声远','鸡器人','厉丹阳','王佳林','韦洁    ' ,'陈佳宁']
+        name_list = ['徐凯源','宋绍铭','刘　洋','韩纪飞','高佳琦','郭东旭','张若冰','韩晓霏','于　超','林声远','鸡器人','厉丹阳','王佳林','韦　洁' ,'陈佳宁']
         name_list_eng = ['xky','ssm','ly','hjf','gjq','gdx','zrb','hxf','yc','lsy','test','ldy','wjl','wj' ,'cjn']
         lists = zip(totalseconds, online_time_sum, name_list, name_list_eng)
         lists.sort(key=lambda x:x[0],reverse=True)
         msg = '本周目前排名：\n'
         rank = 0
         for i in range(memberNum):
-            msg_i = str(lists[i][0] / 3600)
-            space = ' '
-            msg = msg + lists[i][2] + space + msg_i[0:5] + '小时\n'
+            rkstr = '  %d' % (i+1)  # rank string
+            if len(rkstr) < 4: # add two (half-width) space for alignment
+                rkstr = '  ' + rkstr
+            hrstr = '%2.1f' % (lists[i][0] / 3600.0) # hour string 
+            if len(hrstr) < 5: # add four (half-width) space for alignment
+                hrstr = '    ' + hrstr
+            elif len(hrstr) < 4: # add two (half-width) space for alignment
+                hrstr =   '  ' + hrstr
+            msg = msg + rkstr + ' | ' + lists[i][2] + ' ' + hrstr + ' 小时\n'
             if lists[i][3] == name:
                 rank = i + 1
         if rank != 0:
-            names = lists[rank - 1][2].split()
-            msg = msg + names[0] + "的目前排名：" + (str)(rank)
+            names = lists[rank - 1][2].replace('　', '') # omit the full-width space '\xa1\xa1'
+            # splitline = '——————————\n' # split line (caution: display varies with PC and phone)
+            msg = msg + names + "的目前排名：" + (str)(rank)
         self.webwxsendmsg(msg, dst)
-
 
     def handleMsg(self, r):
         for msg in r['AddMsgList']:

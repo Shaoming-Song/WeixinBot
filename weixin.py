@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8
+# coding: utf-8 
 import qrcode
 import urllib
 import urllib2
@@ -25,7 +25,10 @@ from name_dict import name_dict
 from name_dict import name_abbr
 from id_group import id_dict
 #import pdb
-
+print sys.getdefaultencoding()
+reload(sys)   
+sys.setdefaultencoding('utf8')
+print sys.getdefaultencoding() 
 # for media upload
 import mimetypes
 from requests_toolbelt.multipart.encoder import MultipartEncoder
@@ -980,7 +983,7 @@ class WebWeixin(object):
                 state_in[id] = 1
                 weekday = time.weekday()
                 if online_time[weekday][id] == datetime.timedelta(0):
-                    info = '您刚开始沉迷学习，加油'
+                    info = '鸣洲都能九点前到实验室，你有什么理由不努力！您刚开始沉迷学习，加油'
                 else:
                     info = '您今日沉迷学习时间为：' + str(online_time[weekday][id])
                 flag = True
@@ -1060,7 +1063,9 @@ class WebWeixin(object):
         msg = '本周目前排名：\n'
         rank = 0
         for i in range(memberNum):
-            msg = msg + lists[i][2] + ' ' + str(lists[i][1]) + '\n'
+            msg_i = str(lists[i][0] / 3600)
+            space = ' '
+            msg = msg + lists[i][2] + space + msg_i[0:5] + 'hours\n'
             if lists[i][2] == name:
                 rank = i + 1
         if rank != 0:
@@ -1375,7 +1380,7 @@ class WebWeixin(object):
         # img.save("qrcode.png")
         #mat = qr.get_matrix()
         #self._printQR(mat)  # qr.print_tty() or qr.print_ascii()
-        qr.print_ascii(invert=True)
+        qr.print_tty()
 
     def _transcoding(self, data):
         if not data:

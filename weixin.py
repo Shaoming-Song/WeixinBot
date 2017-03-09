@@ -24,11 +24,6 @@ from lxml import html
 from name_dict import name_dict
 from name_dict import name_abbr
 from id_group import id_dict
-
-# Added by Jiaqi Gao
-from re_test import re_dict
-import xmlrpclib
-
 #import pdb
 print sys.getdefaultencoding()
 reload(sys)   
@@ -143,7 +138,6 @@ class WebWeixin(object):
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
         opener.addheaders = [('User-agent', self.user_agent)]
         urllib2.install_opener(opener)
-        self.rpc_server = xmlrpclib.ServerProxy('http://localhost:12345')
 
     def loadConfig(self, config):
         if config['DEBUG']:
@@ -759,7 +753,7 @@ class WebWeixin(object):
         if groupName != None:
             print '%s |%s| %s -> %s: %s' % (message_id, groupName.strip(), srcName.strip(), dstName.strip(), content.replace('<br/>', '\n'))
             
-            if groupName.strip() == "微信机器人测试": #or groupName.strip() == "沉迷学习，日渐消瘦":
+            if groupName.strip() == "微信机器人测试" or groupName.strip() == "沉迷学习，日渐消瘦":
                 print msg['raw_msg']['Content']
                 if msg['raw_msg']['FromUserName'][:2] == '@@':
                     self.handleGroupMsg(content, msg['raw_msg']['FromUserName'], srcName)
@@ -780,24 +774,6 @@ class WebWeixin(object):
             logging.info('%s %s -> %s: %s' % (message_id, srcName.strip(),
                                               dstName.strip(), content.replace('<br/>', '\n')))
     def handleGroupMsg(self, content, dst, srcName):
-
-        try:
-            for key in re_dict:
-                if re.match(key, content):
-                    #self.webwxsendmsg(re_dict[key] + '【自动回复】', dst)
-                    #self.webwxsendmsg("【收到内容】" + content , dst)
-                    #return
-                    msg, extra_msg = re_dict[key](content, dst, srcName)
-                    if msg != None:
-                        self.webwxsendmsg(msg + '【自动回复】', dst)
-                    if extra_msg != None:
-                        self.webwxsendmsg(extra_msg, dst)
-                    return
-        except Exception, e:
-            print str(e)
-            pass
-        return
-
         log_info = ''
         content_new = content.replace('<br/>', '\n')
         buffer_content = content.split()
@@ -1081,19 +1057,21 @@ class WebWeixin(object):
                 online_time_sum[i] = online_time_sum[i] + online_time[j][i]
             online_time_sum[i] = online_time_sum[i] + duration
             totalseconds[i] = online_time_sum[i].total_seconds()
-        name_list = ['xky','ssm','ly','hjf','gjq','gdx','zrb','hxf','yc','lsy','test','ldy','wjl','wj','cjn']
-        lists = zip(totalseconds, online_time_sum, name_list)
+        name_list = ['徐凯源','宋绍铭','刘洋    ','韩纪飞','高佳琦','郭东旭','张若冰','韩晓霏','于超    ','林声远','鸡器人','厉丹阳','王佳林','韦洁    ' ,'陈佳宁']
+        name_list_eng = ['xky','ssm','ly','hjf','gjq','gdx','zrb','hxf','yc','lsy','test','ldy','wjl','wj' ,'cjn']
+        lists = zip(totalseconds, online_time_sum, name_list, name_list_eng)
         lists.sort(key=lambda x:x[0],reverse=True)
         msg = '本周目前排名：\n'
         rank = 0
         for i in range(memberNum):
             msg_i = str(lists[i][0] / 3600)
             space = ' '
-            msg = msg + lists[i][2] + space + msg_i[0:5] + 'hours\n'
-            if lists[i][2] == name:
+            msg = msg + lists[i][2] + space + msg_i[0:5] + '小时\n'
+            if lists[i][3] == name:
                 rank = i + 1
         if rank != 0:
-            msg = msg + name + "的目前排名：" + (str)(rank)
+            names = lists[rank - 1][2].split()
+            msg = msg + names[0] + "的目前排名：" + (str)(rank)
         self.webwxsendmsg(msg, dst)
 
 
@@ -1405,10 +1383,6 @@ class WebWeixin(object):
         #mat = qr.get_matrix()
         #self._printQR(mat)  # qr.print_tty() or qr.print_ascii()
         qr.print_tty()
-<<<<<<< HEAD
-=======
-        #qr.print_ascii(invert=True)
->>>>>>> 7f81f3892ebbc1fc2633238c19f789621a916cc1
 
     def _transcoding(self, data):
         if not data:

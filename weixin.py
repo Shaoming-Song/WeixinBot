@@ -1068,9 +1068,9 @@ class WebWeixin(object):
             if len(rkstr) < 4: # add two (half-width) space for alignment
                 rkstr = '  ' + rkstr
             hrstr = '%2.1f' % (lists[i][0] / 3600.0) # hour string 
-            if len(hrstr) < 5: # add four (half-width) space for alignment
+            if len(hrstr) < 4: # add four (half-width) space for alignment
                 hrstr = '    ' + hrstr
-            elif len(hrstr) < 4: # add two (half-width) space for alignment
+            elif len(hrstr) < 5: # add two (half-width) space for alignment
                 hrstr =   '  ' + hrstr
             msg = msg + rkstr + ' | ' + lists[i][2] + ' ' + hrstr + ' 小时\n'
             if lists[i][3] == name:

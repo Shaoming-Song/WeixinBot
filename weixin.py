@@ -821,7 +821,7 @@ class WebWeixin(object):
                 log_info = ''
  #           self.webwxsendmsg(info + '【自动回复】', dst)
         # sum keywords: sum.
-        elif content == "统计" or content.low() == "sum":
+        elif content == "统计" or content.lower() == "sum":
             date_time = datetime.datetime.now()
             name = ''
             if len(buffer_content) == 1:
@@ -833,7 +833,7 @@ class WebWeixin(object):
                 check_info = {'name' : name_dict[name], 'time' : date_time.strftime('%Y-%m-%d %H:%M')}
                 self.timeSum(check_info, dst)
         # thisrank keywords: thisrank.
-    elif content == "今日排名" or content == "今日排行" or content.lower() == "thisrank":
+       elif content == "今日排名" or content == "今日排行" or content.lower() == "thisrank":
             date_time = datetime.datetime.now()
             name = srcName.decode('UTF-8')
             check_info = {'name' : name_dict[name], 'time' : date_time.strftime('%Y-%m-%d %H:%M')}
@@ -1054,8 +1054,8 @@ class WebWeixin(object):
 
     # [func] ranking for the queryed date
     #        code reused from [func]timeRank
-    #        todo: 1. time zone of Jacky Gao
-    #              2. start time be modified as 06:00 am
+    #        todo: 1. time zone issue of Jacky Gao
+    #              2. start time modified as 06:00 am
     def thisRank(self, check_info, dst):
         online_this_sum = [datetime.timedelta(0) for i in range(memberNum)]
         thisseconds = [0 for i in range(memberNum)] # seconds count for today till queryed time
@@ -1067,8 +1067,8 @@ class WebWeixin(object):
             weekday = time.weekday()
             online_this_sum[i] = online_time[weekday][i] + duration
             thisseconds[i] = online_this_sum[i].total_seconds()
-        name_list = ['徐凯源','宋绍铭','刘　洋','韩纪飞','高佳琦','郭东旭','张若冰','韩晓霏','于　超','林声远','厉丹阳','王佳林','韦　洁' ,'陈佳宁','鸡器人']
-        name_list_eng = ['xky','ssm','ly','hjf','gjq','gdx','zrb','hxf','yc','lsy','ldy','wjl','wj' ,'cjn','test']
+        name_list = ['徐凯源','宋绍铭','刘　洋','韩纪飞','高佳琦','郭东旭','张若冰','韩晓霏','于　超','林声远','鸡器人','厉丹阳','王佳林','韦　洁' ,'陈佳宁']
+        name_list_eng = ['xky','ssm','ly','hjf','gjq','gdx','zrb','hxf','yc','lsy','test','ldy','wjl','wj' ,'cjn']
         lists = zip(thisseconds, online_this_sum, name_list, name_list_eng)
         lists.sort(key=lambda x:x[0],reverse=True)
         msg = '今日当前排名：\n'
@@ -1104,8 +1104,8 @@ class WebWeixin(object):
                 online_time_sum[i] = online_time_sum[i] + online_time[j][i]
             online_time_sum[i] = online_time_sum[i] + duration
             totalseconds[i] = online_time_sum[i].total_seconds()
-        name_list = ['徐凯源','宋绍铭','刘　洋','韩纪飞','高佳琦','郭东旭','张若冰','韩晓霏','于　超','林声远','厉丹阳','王佳林','韦　洁' ,'陈佳宁','鸡器人']
-        name_list_eng = ['xky','ssm','ly','hjf','gjq','gdx','zrb','hxf','yc','lsy','ldy','wjl','wj' ,'cjn','test']
+        name_list = ['徐凯源','宋绍铭','刘　洋','韩纪飞','高佳琦','郭东旭','张若冰','韩晓霏','于　超','林声远','鸡器人','厉丹阳','王佳林','韦　洁' ,'陈佳宁']
+        name_list_eng = ['xky','ssm','ly','hjf','gjq','gdx','zrb','hxf','yc','lsy','test','ldy','wjl','wj' ,'cjn']
         lists = zip(totalseconds, online_time_sum, name_list, name_list_eng)
         lists.sort(key=lambda x:x[0],reverse=True)
         msg = '本周目前排名：\n'
